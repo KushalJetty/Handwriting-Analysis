@@ -2,6 +2,10 @@ import cv2
 import numpy as np
 from tkinter import Tk, Label, Button, filedialog
 from PIL import Image, ImageTk
+import pytesseract
+
+# Set the Tesseract command to the full path
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 def select_image(label):
     file_path = filedialog.askopenfilename()
@@ -15,6 +19,11 @@ def select_image(label):
         label.image = image  # Store the actual image in the label
         return image
     return None
+
+def contains_handwriting(image):
+    custom_config = r'--oem 3 --psm 6'
+    text = pytesseract.image_to_string(image, config=custom_config)
+    return len(text.strip()) > 0
 
 def compare_handwriting(img1, img2):
     orb = cv2.ORB_create()
@@ -35,8 +44,11 @@ def on_compare_button_click(img1_label, img2_label, result_label):
     img2 = img2_label.image
 
     if img1 is not None and img2 is not None:
-        similarity = compare_handwriting(img1, img2)
-        show_comparison_result(similarity, result_label)
+        if contains_handwriting(img1) and contains_handwriting(img2):
+            similarity = compare_handwriting(img1, img2)
+            show_comparison_result(similarity, result_label)
+        else:
+            result_label.config(text='No handwritten text found in one or both images.')
     else:
         result_label.config(text='Please select both images.')
 

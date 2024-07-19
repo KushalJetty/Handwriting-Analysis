@@ -1,4 +1,5 @@
 import tkinter as tk
+import subprocess
 
 def main():
     root = tk.Tk()
@@ -11,13 +12,13 @@ def main():
     root.mainloop()
 
 def handwriting_comparison():
-    pass
+    subprocess.run(["python", "h_cmp.py"])
 
 def handwritten_to_text():
-    pass
+    subprocess.run(["python", "h_totxt.py"])
 
 def digital_evaluation():
-    pass
+    subprocess.run(["python", "h_des.py"])
 
 if __name__ == "__main__":
     main()

@@ -5,14 +5,27 @@ from fpdf import FPDF
 import fitz  # PyMuPDF
 from tkinter import Tk, Label, Button, filedialog, messagebox
 
-def select_file():
-    file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf"), ("Image files", "*.jpg;*.jpeg;*.png")])
+def select_pdf():
+    file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
     return file_path
+
+def select_image():
+    file_path = filedialog.askopenfilename(filetypes=[("Image files", "*.jpg;*.jpeg;*.png")])
+    return file_path
+
+def preprocess_image(image_path):
+    image = cv2.imread(image_path)
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 150, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (1, 1))
+    dilated = cv2.dilate(thresh, kernel, iterations=1)
+    eroded = cv2.erode(dilated, kernel, iterations=1)
+    return eroded
 
 def extract_text_from_image(image_path):
     try:
-        image = Image.open(image_path)
-        text = pytesseract.image_to_string(image)
+        preprocessed_image = preprocess_image(image_path)
+        text = pytesseract.image_to_string(preprocessed_image)
         return text
     except Exception as e:
         messagebox.showerror("Error", f"Failed to extract text from image: {e}")
@@ -33,6 +46,13 @@ def extract_text_from_pdf(pdf_path):
         messagebox.showerror("Error", f"Failed to extract text from PDF: {e}")
         return None
 
+def save_text_to_txt(text, output_path):
+    try:
+        with open(output_path, 'w', encoding='utf-8') as f:
+            f.write(text)
+    except Exception as e:
+        messagebox.showerror("Error", f"Failed to save text to file: {e}")
+
 def save_text_to_pdf(text, output_path):
     try:
         pdf = FPDF()
@@ -44,47 +64,35 @@ def save_text_to_pdf(text, output_path):
     except Exception as e:
         messagebox.showerror("Error", f"Failed to save text to PDF: {e}")
 
-def save_text_to_image(text, output_path, original_image_path):
-    try:
-        image = cv2.imread(original_image_path)
-        text_position = (10, 30)
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = 0.7
-        font_color = (0, 0, 0)
-        line_type = 2
-
-        y0, dy = text_position[1], 20
-        for i, line in enumerate(text.split('\n')):
-            y = y0 + i * dy
-            cv2.putText(image, line, (text_position[0], y), font, font_scale, font_color, line_type)
-
-        cv2.imwrite(output_path, image)
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to save text to image: {e}")
-
-def process_file():
-    file_path = select_file()
+def process_pdf():
+    file_path = select_pdf()
     if not file_path:
         return
-    if file_path.endswith(".pdf"):
-        text = extract_text_from_pdf(file_path)
-        if text:
-            output_path = "./output/output_text.pdf"
-            save_text_to_pdf(text, output_path)
-    else:
-        text = extract_text_from_image(file_path)
-        if text:
-            output_path = "./output/image_with_text.png"
-            save_text_to_image(text, output_path, file_path)
+    text = extract_text_from_pdf(file_path)
+    if text:
+        output_path = "output_text.pdf"
+        save_text_to_pdf(text, output_path)
+        messagebox.showinfo("Success", f"Text extracted from PDF and saved to {output_path}")
 
-    messagebox.showinfo("Success", f"Output saved to {output_path}")
+def process_image():
+    file_path = select_image()
+    if not file_path:
+        return
+    text = extract_text_from_image(file_path)
+    if text:
+        output_path = "output_text.txt"
+        save_text_to_txt(text, output_path)
+        messagebox.showinfo("Success", f"Text extracted from image and saved to {output_path}")
 
 def main():
     root = Tk()
     root.title("Handwriting to Text")
 
-    select_file_button = Button(root, text="Select File", command=process_file)
-    select_file_button.pack(pady=20)
+    select_pdf_button = Button(root, text="Select PDF", command=process_pdf)
+    select_pdf_button.pack(pady=20)
+
+    select_image_button = Button(root, text="Select Image", command=process_image)
+    select_image_button.pack(pady=20)
 
     root.mainloop()
 

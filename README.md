@@ -1,6 +1,3 @@
-Here's a `README.md` file for your project:
-
-```markdown
 # Handwriting Analysis Tool
 
 This project provides a GUI-based tool for various handwriting analysis tasks including handwriting comparison, handwritten images to text conversion, and a digital evaluation system. The tool is developed in Python and uses libraries such as OpenCV, Tesseract OCR, tkinter, and others.

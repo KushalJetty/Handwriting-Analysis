@@ -49,7 +49,7 @@ def process_image():
         return
     text = extract_text_from_image(file_path)
     if text:
-        output_path = "output_text.txt"
+        output_path = "./output/output_text.txt"
         save_text_to_txt(text, output_path)
         messagebox.showinfo("Success", f"Text extracted from image and saved to {output_path}")
 

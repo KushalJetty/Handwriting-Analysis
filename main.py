@@ -18,7 +18,7 @@ def main():
 
     # Set background image
     global background_image, background_photo, background_label
-    background_image = Image.open("background.jpeg")  # Add path to your background image
+    background_image = Image.open("background.jpeg")  
     background_photo = ImageTk.PhotoImage(background_image.resize((window_width, window_height)))
     background_label = tk.Label(root, image=background_photo)
     background_label.place(x=0, y=0, relwidth=1, relheight=1)

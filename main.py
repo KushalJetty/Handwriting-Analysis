@@ -42,7 +42,7 @@ def main():
 
     # Add buttons
     ttk.Button(frame, text="Handwriting Comparison", command=handwriting_comparison).pack(pady=10)
-    ttk.Button(frame, text="Handwritten Images to Text", command=handwritten_to_text).pack(pady=10)
+    ttk.Button(frame, text="Handwritten and Text Images to Text", command=handwritten_to_text).pack(pady=10)
     # ttk.Button(frame, text="Digital Evaluation System", command=digital_evaluation).pack(pady=10)
     
     root.mainloop()

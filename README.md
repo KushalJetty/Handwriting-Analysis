@@ -69,6 +69,3 @@ Additionally, you need to install Tesseract OCR. Follow the instructions for you
 - **FPDF**: [FPDF Documentation](http://www.fpdf.org/)
 - **PyMuPDF**: [PyMuPDF Documentation](https://pymupdf.readthedocs.io/)
 
-## License
-
-This project is licensed under the MIT License.
